@@ -24,9 +24,13 @@ const int POSTION_RIGHT = 1;
 //chars
 const char player_characters[3] = {'+', '>', '='};
 const char enemy_characters[4] = {'}', ']', ')', 'X'};
+String gen_enemy_string() {
+  String return_val = "  " + enemy_characters[random(0, 5)] + "   " + enemy_characters[random(0, 5)] + "   " + enemy_characters[random(0, 5)] + "   " + enemy_characters[random(0, 5)] + "   " + enemy_characters[random(0, 5)] + "   " + enemy_characters[random(0, 5)] + "   "
+  return return_val;
+}
 
-String enemys_left = "       X        ";
-String enemys_right = "       X        ";
+unsigned int enemy_offset = 0;
+String enemy_string = gen_enemy_string();
 
 char character = player_characters[STATE_RUN];
 
@@ -36,8 +40,12 @@ int position = POSTION_LEFT; // POSTION_LEFT, POSTION_RIGHT
 //points
 int score = 0;
 
+//delay
 int delay_state = 0;
-int enemy_delay = 800;
+
+int enemy_delay = 400;
+const int ENEMY_DELAY_DEFAULT = 200;
+
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 
@@ -58,37 +66,36 @@ void loop() {
 // String x = "X   X      X ";
 // Serial.print(x.substring(4));
 
-  if (!digitalRead(button_jump)) {
-    lcd.clear();
-    while (true) {
-      if (!digitalRead(button_jump)) {
-        delay_state = 500;
-        character = player_characters[STATE_JUMP];
-      } else if (!digitalRead(button_crouch)) {
-        delay_state = 500;
-        break;
-        character = player_characters[STATE_CROUCH];
-      } else if (delay_state == 0) {
-        character = player_characters[STATE_RUN];
-      }
+  // if (!digitalRead(button_jump)) {
+  //   while (true) {
+  //     if (!digitalRead(button_jump)) {
+  //       delay_state = 500;
+  //       character = player_characters[STATE_JUMP];
+  //     } else if (!digitalRead(button_crouch)) {
+  //       delay_state = 500;
+  //       break;
+  //       character = player_characters[STATE_CROUCH];
+  //     } else if (delay_state == 0) {
+  //       character = player_characters[STATE_RUN];
+  //     }
 
-      if (!digitalRead(button_left)) {
-        position = POSTION_LEFT;
-      } else if (!digitalRead(button_right)) {
-        position = POSTION_RIGHT; 
-      }
+  //     if (!digitalRead(button_left)) {
+  //       position = POSTION_LEFT;
+  //     } else if (!digitalRead(button_right)) {
+  //       position = POSTION_RIGHT; 
+  //     }
 
-      render();
+  //     render();
 
-      delay(50);
-      if (delay_state > 0) {
-        delay_state -= 50;
-      }
-    }
-    score_screen();
-    delay(1000);
-    main_menu();
-  }
+  //     delay(50);
+  //     if (delay_state > 0) {
+  //       delay_state -= 50;
+  //     }
+  //   }
+  //   score_screen();
+  //   delay(1000);
+  //   main_menu();
+  // }
 }
 
 
@@ -110,19 +117,20 @@ void render() {
 
   //enemy render
   if (enemy_delay == 0) {
-    //render and death
-    lcd.setCursor(0, 0);
-    lcd.print(enemys_left);
-    enemys_left = enemys_left.substring(1) + enemy_characters[random(0, 3)];
-
-    lcd.setCursor(0, 1);
+    //set and death
+    lcd.setCursor(0, POSTION_RIGHT);
     lcd.print(enemys_right);
-    enemys_right = enemys_right.substring(1) + enemy_characters[random(0, 3)];
+    lcd.setCursor(0, POSTION_LEFT);
+    lcd.print(enemys_left);
 
-    enemy_delay = 400;
+
+    enemy_delay = ENEMY_DELAY_DEFAULT;
   } else {
     enemy_delay -= 50;
   }
+  // enemy render
+  delay(500);
+  
 
   //player render
   lcd.setCursor(0, position);
