@@ -1,5 +1,11 @@
 #include <LiquidCrystal_I2C.h>
 
+//pins
+const int button_left = 8; // vim reference
+const int button_crouch = 9;
+const int button_jump = 10;
+const int button_right = 11;
+
 //states
 const int STATE_CROUCH = 0;
 const int STATE_RUN = 1;
@@ -15,15 +21,12 @@ const int ENEMY_NEITHER_FENCE = 3;
 const int POSTION_LEFT = 0;
 const int POSTION_RIGHT = 1;
 
-//pins
-const int button_left = 8; // vim reference
-const int button_crouch = 9;
-const int button_jump = 10;
-const int button_right = 11;
-
 //chars
 const char player_characters[3] = {'+', '>', '='};
 const char enemy_characters[4] = {'}', ']', ')', 'X'};
+
+String enemys_left = "       X        ";
+String enemys_right = "       X        ";
 
 char character = player_characters[STATE_RUN];
 
@@ -34,8 +37,9 @@ int position = POSTION_LEFT; // POSTION_LEFT, POSTION_RIGHT
 int score = 0;
 
 int delay_state = 0;
-
+int enemy_delay = 800;
 LiquidCrystal_I2C lcd(0x27, 16, 2);
+
 
 void setup() {
   pinMode(button_left,INPUT_PULLUP);
@@ -46,10 +50,16 @@ void setup() {
   lcd.begin(16, 2);
   lcd.backlight();
   main_menu();
+  // Serial.begin(9600);
 }
 
 void loop() {
+
+// String x = "X   X      X ";
+// Serial.print(x.substring(4));
+
   if (!digitalRead(button_jump)) {
+    lcd.clear();
     while (true) {
       if (!digitalRead(button_jump)) {
         delay_state = 500;
@@ -65,7 +75,7 @@ void loop() {
       if (!digitalRead(button_left)) {
         position = POSTION_LEFT;
       } else if (!digitalRead(button_right)) {
-        position = POSTION_RIGHT;
+        position = POSTION_RIGHT; 
       }
 
       render();
@@ -76,7 +86,7 @@ void loop() {
       }
     }
     score_screen();
-    delay(100);
+    delay(1000);
     main_menu();
   }
 }
@@ -97,16 +107,33 @@ void score_screen() {
 }
 
 void render() {
-  lcd.clear();
+
+  //enemy render
+  if (enemy_delay == 0) {
+    //render and death
+    lcd.setCursor(0, 0);
+    lcd.print(enemys_left);
+    enemys_left = enemys_left.substring(1) + enemy_characters[random(0, 3)];
+
+    lcd.setCursor(0, 1);
+    lcd.print(enemys_right);
+    enemys_right = enemys_right.substring(1) + enemy_characters[random(0, 3)];
+
+    enemy_delay = 400;
+  } else {
+    enemy_delay -= 50;
+  }
 
   //player render
   lcd.setCursor(0, position);
   lcd.print(character);
   lcd.setCursor(0, (position + 1) % 2);
   lcd.print(' ');
-
-  //enemy render
-  
 }
+
+
+
+
+
 
 
