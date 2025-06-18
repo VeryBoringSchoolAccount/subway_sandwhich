@@ -17,6 +17,11 @@ const int ENEMY_JUMP = 1;
 const int ENEMY_BOTH_FENCE = 2;
 const int ENEMY_NEITHER_FENCE = 3;
 
+char Enemy_Left = "              X"
+char Enemy_Right = "              X"
+
+
+
 //postion
 const int POSTION_LEFT = 0;
 const int POSTION_RIGHT = 1;
@@ -24,39 +29,6 @@ const int POSTION_RIGHT = 1;
 //chars
 const char player_characters[3] = {'+', '>', '='};
 const char enemy_characters[4] = {'}', ']', ')', 'X'};
-
-const char enemys_left[] = " " + " " + enemy_characters[random(1,5)] + " " + " " + " " + enemy_characters[random(1,5)] + " " + " " + " " + enemy_characters[random(1,5)] + " " + " " + " " + enemy_characters[random(1,5)] + " " + " " + " " + enemy_characters[random(1,5)];
-//ERROR ^
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
-//ERROR |
 
 char character = player_characters[STATE_RUN];
 
@@ -80,6 +52,8 @@ void setup() {
   pinMode(button_right,INPUT_PULLUP);
   pinMode(button_jump,INPUT_PULLUP);
   pinMode(button_crouch,INPUT_PULLUP);
+
+
 
   lcd.begin(16, 2);
   lcd.backlight();
@@ -148,13 +122,16 @@ void render() {
     lcd.print(" ");
     lcd.setCursor(0, POSTION_LEFT);
     lcd.print(" ");
-
+    
 
     enemy_delay = ENEMY_DELAY_DEFAULT;
+    lcd.setCursor(1, POSTION_LEFT);
+    lcd.print(Enemy_Left);
+    lcd.setCursor(1, POSTION_RIGHT);
+    lcd.print(Enemy_Right);
   } else {
     enemy_delay -= 50;
   }
-  // enemy render
   
   
 
